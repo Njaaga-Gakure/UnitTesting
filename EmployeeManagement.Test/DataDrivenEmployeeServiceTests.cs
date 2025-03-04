@@ -8,11 +8,11 @@ namespace EmployeeManagement.Test
     public class DataDrivenEmployeeServiceTests (EmployeeServiceFixture employeeServiceFixture) 
     {
 
-        public static IEnumerable<object[]> ExampleTestDataForGivenRaise_WithProperty
+        public static TheoryData<int, bool> ExampleTestDataForGivenRaise_WithProperty
         {
             get
             {
-                return [[100, true], [200, false]];
+                return new TheoryData<int, bool>() { { 100, true }, {200, false } }; 
             }
         }
 
@@ -52,7 +52,8 @@ namespace EmployeeManagement.Test
             Assert.Equal(expectedValueForMinimumRaiseGiven, internalEmployee.MinimumRaiseGiven); 
         }
         [Theory]
-        [ClassData(typeof(EmployeeServiceTestData))]
+        //[ClassData(typeof(EmployeeServiceTestData))]
+        [ClassData(typeof(StronglyTypedEmployeeServiceTestData))]
         public async Task GiveRaise_RaiseGiven_EmployeeMinimumRaiseGivenMatches_ClassData(int RaiseGiven, bool expectedValueForMinimumRaiseGiven)
         {
             var internalEmployee = new InternalEmployee("Brian", "Gakure", 4, 2500, false, 1);
