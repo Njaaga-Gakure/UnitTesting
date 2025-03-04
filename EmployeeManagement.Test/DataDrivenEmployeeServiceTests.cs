@@ -53,7 +53,8 @@ namespace EmployeeManagement.Test
         }
         [Theory]
         //[ClassData(typeof(EmployeeServiceTestData))]
-        [ClassData(typeof(StronglyTypedEmployeeServiceTestData))]
+        //[ClassData(typeof(StronglyTypedEmployeeServiceTestData))]
+        [ClassData(typeof(StronlyTypedEmployeeServiceTestDataFromFile))]
         public async Task GiveRaise_RaiseGiven_EmployeeMinimumRaiseGivenMatches_ClassData(int RaiseGiven, bool expectedValueForMinimumRaiseGiven)
         {
             var internalEmployee = new InternalEmployee("Brian", "Gakure", 4, 2500, false, 1);
