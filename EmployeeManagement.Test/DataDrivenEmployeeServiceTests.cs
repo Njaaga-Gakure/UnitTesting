@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.DataAccess.Entities;
 using EmployeeManagement.Test.Fixtures;
+using EmployeeManagement.Test.TestData;
 
 namespace EmployeeManagement.Test
 {
@@ -45,6 +46,14 @@ namespace EmployeeManagement.Test
         [Theory]
         [MemberData(nameof(GetExampleTestDataForGivenRaise), 2)]
         public async Task GiveRaise_RaiseGiven_EmployeeMinimumRaiseGivenMatches_WithMethod(int RaiseGiven, bool expectedValueForMinimumRaiseGiven)
+        {
+            var internalEmployee = new InternalEmployee("Brian", "Gakure", 4, 2500, false, 1);
+            await employeeServiceFixture.EmployeeService.GiveRaiseAsync(internalEmployee, RaiseGiven); 
+            Assert.Equal(expectedValueForMinimumRaiseGiven, internalEmployee.MinimumRaiseGiven); 
+        }
+        [Theory]
+        [ClassData(typeof(EmployeeServiceTestData))]
+        public async Task GiveRaise_RaiseGiven_EmployeeMinimumRaiseGivenMatches_ClassData(int RaiseGiven, bool expectedValueForMinimumRaiseGiven)
         {
             var internalEmployee = new InternalEmployee("Brian", "Gakure", 4, 2500, false, 1);
             await employeeServiceFixture.EmployeeService.GiveRaiseAsync(internalEmployee, RaiseGiven); 
