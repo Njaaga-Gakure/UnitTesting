@@ -1,6 +1,9 @@
 ﻿using EmployeeManagement.Business;
 using EmployeeManagement.DataAccess.DbContexts;
+using EmployeeManagement.DataAccess.Entities;
 using EmployeeManagement.DataAccess.Services;
+using EmployeeManagement.Test.HttpMessageHandlers;
+using EmployeeManagement.Test.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Sdk;
@@ -36,8 +39,22 @@ namespace EmployeeManagement.Test
 
             // assert
             Assert.Equal(expectedSugestedBonus, internalEmployee.SuggestedBonus);
+        }
+        [Fact]
+        public async Task PromoteInternalEmployeeAsync_IsEligible_JobLevelMustBeIncreased()
+        {
 
-        
+            // Arrange
+            var httpClient = new HttpClient(new TestablePromotionEligibilityHandler(true));
+            var internalEmployee = new InternalEmployee("Brian", "Gakure", 5, 2500, false, 1);
+            var promotionService = new PromotionService(httpClient, new EmployeeManagementTestDataRepository());
+            
+            // Act
+
+            await promotionService.PromoteInternalEmployeeAsync(internalEmployee);
+
+            // Assert
+            Assert.Equal(2, internalEmployee.JobLevel); 
         }
     }
 }
