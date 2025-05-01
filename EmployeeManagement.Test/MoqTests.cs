@@ -24,6 +24,21 @@ namespace EmployeeManagement.Test
             Assert.Equal(400, employee.SuggestedBonus); 
         }
         [Fact]
+        public async Task FetchInternalEmployee_EmployeeFetched_SuggestedBonusMustBeCalculated_Async() { 
+            var employeeManagementTestDataRepository = new EmployeeManagementTestDataRepository();
+            //var employeeFactory = new EmployeeFactory(); 
+            var employeeManagementTestDataRepositoryMock = new Mock<IEmployeeManagementRepository>();
+            employeeManagementTestDataRepositoryMock.Setup(employeeManagementRepo => employeeManagementRepo.GetInternalEmployeeAsync(It.IsAny<Guid>())).ReturnsAsync(new InternalEmployee("Brian", "Gakure", 2, 2500, false, 2) { 
+                AttendedCourses = new List<Course>() {  new Course("Course One"), new Course("Course Two")}
+            }); 
+            var employeeFactoryMock = new Mock<EmployeeFactory>();
+            var employeeService = new EmployeeService(employeeManagementTestDataRepositoryMock.Object, employeeFactoryMock.Object);
+
+            var employee = await employeeService.FetchInternalEmployeeAsync(Guid.Empty);
+
+            Assert.Equal(400, employee.SuggestedBonus); 
+        }
+        [Fact]
         public void CreateInternalEmployee_InternalEmployeeCreated_SuggestedBonusMustBeCalculated() { 
             var employeeManagementTestDataRepository = new EmployeeManagementTestDataRepository();
             var employeeFactoryMock = new Mock<EmployeeFactory>();
@@ -36,7 +51,7 @@ namespace EmployeeManagement.Test
 
             decimal suggestedBonus = 1000;
 
-            var employee = employeeService.CreateInternalEmployee("Jeff", "Gkure"); 
+            var employee = employeeService.CreateInternalEmployee("Jeff", "Gakure"); 
 
             Assert.Equal(suggestedBonus, employee.SuggestedBonus); 
         }
