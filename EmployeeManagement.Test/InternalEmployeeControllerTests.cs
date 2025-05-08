@@ -41,5 +41,19 @@ namespace EmployeeManagement.Test
             Assert.IsType<IEnumerable<InternalEmployeeDto>>(((OkObjectResult)actionResult.Result)?.Value, exactMatch: false); 
 
         }
+        [Fact]
+        public async Task GetInternalEmployee_GetAction_MustReturnNumberOfInputtedInternalEmployees() {
+           
+            var result = await _internalEmployeesController.GetInternalEmployees();
+            var actionResult = Assert.IsType<ActionResult<IEnumerable<InternalEmployeeDto>>>(result);
+
+
+            // exact match false is because we are asserting an interface not a concrete class
+            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+            //var employees = Assert.IsAssignableFrom<IEnumerable<InternalEmployeeDto>>(okResult.Value);
+            var employees = Assert.IsType<IEnumerable<InternalEmployeeDto>>(okResult.Value, exactMatch: false);
+            Assert.Equal(3, employees.Count());
+
+        }
     }
 }
