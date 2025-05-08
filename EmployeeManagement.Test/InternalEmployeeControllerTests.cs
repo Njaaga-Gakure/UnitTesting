@@ -10,11 +10,13 @@ namespace EmployeeManagement.Test
     public class InternalEmployeeControllerTests
     {
         private readonly InternalEmployeesController _internalEmployeesController; 
+        private readonly InternalEmployee _firstEmployee; 
         public InternalEmployeeControllerTests()
         {
             var employeeServiceMock = new Mock<IEmployeeService>();
+            _firstEmployee = new("Brian", "Gakure", 2, 3000, false, 2); 
             employeeServiceMock.Setup(mock => mock.FetchInternalEmployeesAsync()).ReturnsAsync([
-                new("Brian", "Gakure", 2, 3000, false, 2),
+               _firstEmployee,
                 new("Evans", "Mwangi", 2, 4000, false, 1),
                 new("Joel", "Kores", 2, 5000, false, 3),
             ]);
@@ -37,8 +39,8 @@ namespace EmployeeManagement.Test
 
 
             // exact match false is because we are asserting an interface not a concrete class
-           
-            Assert.IsType<IEnumerable<InternalEmployeeDto>>(((OkObjectResult)actionResult.Result)?.Value, exactMatch: false); 
+            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+            Assert.IsType<IEnumerable<InternalEmployeeDto>>(okResult.Value, exactMatch: false); 
 
         }
         [Fact]
@@ -53,6 +55,26 @@ namespace EmployeeManagement.Test
             //var employees = Assert.IsAssignableFrom<IEnumerable<InternalEmployeeDto>>(okResult.Value);
             var employees = Assert.IsType<IEnumerable<InternalEmployeeDto>>(okResult.Value, exactMatch: false);
             Assert.Equal(3, employees.Count());
+
+        } 
+        [Fact]
+        public async Task GetInternalEmployee_GetAction_ObjectMustBeMappedCorrectly() {
+           
+            var result = await _internalEmployeesController.GetInternalEmployees();
+            var actionResult = Assert.IsType<ActionResult<IEnumerable<InternalEmployeeDto>>>(result);
+
+
+            // exact match false is because we are asserting an interface not a concrete class
+            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+            //var employees = Assert.IsAssignableFrom<IEnumerable<InternalEmployeeDto>>(okResult.Value);
+            var employees = Assert.IsType<IEnumerable<InternalEmployeeDto>>(okResult.Value, exactMatch: false);
+            var firstEmployee = employees.First();
+            Assert.Equal(_firstEmployee.Id, firstEmployee.Id);
+            Assert.Equal(_firstEmployee.FirstName, firstEmployee.FirstName);
+            Assert.Equal(_firstEmployee.LastName, firstEmployee.LastName);
+            Assert.Equal(_firstEmployee.Salary, firstEmployee.Salary);
+            Assert.Equal(_firstEmployee.SuggestedBonus, firstEmployee.SuggestedBonus);
+            Assert.Equal(_firstEmployee.YearsInService, firstEmployee.YearsInService);
 
         }
     }
