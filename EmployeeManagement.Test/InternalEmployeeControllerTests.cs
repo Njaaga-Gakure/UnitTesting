@@ -8,22 +8,37 @@ using Moq;
 namespace EmployeeManagement.Test
 {
     public class InternalEmployeeControllerTests
-    {    
-        [Fact]
-        public async Task GetInternalEmployee_GetAction_MustReturnObjectResult() {
+    {
+        private readonly InternalEmployeesController _internalEmployeesController; 
+        public InternalEmployeeControllerTests()
+        {
             var employeeServiceMock = new Mock<IEmployeeService>();
-            employeeServiceMock.Setup(mock => mock.FetchInternalEmployeesAsync()).ReturnsAsync(new List<InternalEmployee>() { 
+            employeeServiceMock.Setup(mock => mock.FetchInternalEmployeesAsync()).ReturnsAsync([
                 new("Brian", "Gakure", 2, 3000, false, 2),
                 new("Evans", "Mwangi", 2, 4000, false, 1),
                 new("Joel", "Kores", 2, 5000, false, 3),
-            });
-            var internalEmployeesController = new InternalEmployeesController(employeeServiceMock.Object, null);
+            ]);
+            _internalEmployeesController = new InternalEmployeesController(employeeServiceMock.Object, null);
+        }
 
-            var result = await internalEmployeesController.GetInternalEmployees();
-
-
+        [Fact]
+        public async Task GetInternalEmployee_GetAction_MustReturnObjectResult() {
+         
+            var result = await _internalEmployeesController.GetInternalEmployees();
             var actionResult = Assert.IsType<ActionResult<IEnumerable<InternalEmployeeDto>>>(result); 
-            var x = Assert.IsType<OkObjectResult>(actionResult.Result); 
+            Assert.IsType<OkObjectResult>(actionResult.Result); 
+
+        }
+        [Fact]
+        public async Task GetInternalEmployee_GetAction_MustReturnIEnumerableOfInternalEmployeeDtoAsModelType() {
+           
+            var result = await _internalEmployeesController.GetInternalEmployees();
+            var actionResult = Assert.IsType<ActionResult<IEnumerable<InternalEmployeeDto>>>(result);
+
+
+            // exact match false is because we are asserting an interface not a concrete class
+           
+            Assert.IsType<IEnumerable<InternalEmployeeDto>>(((OkObjectResult)actionResult.Result)?.Value, exactMatch: false); 
 
         }
     }
